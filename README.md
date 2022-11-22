@@ -1,3 +1,4 @@
-# Little_AI
+# Random Sentence Generator
 
-cis 193 go programming final project
+a n-gram language model that can be used to generate random text resembling a source document
+(without using existing go package)
