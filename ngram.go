@@ -6,6 +6,7 @@ import (
 	"Math/rand"
 	"sort"
 	"io/ioutil"
+	"fmt"
 )
 
 type NGramModel struct {
@@ -81,9 +82,12 @@ func (m *NGramModel)updateNGram(sen string) {
 
 	// update totalGram and contetGram in the model
 	for i := 0; i < len(tokenList)-m.gram+1; i++ {
-		m.totalGram = append(m.totalGram, tokenList[i:i+m.gram])
-		m.contextGram = append(m.contextGram, tokenList[i:i+m.gram-1])
+		totalGram = append(totalGram, tokenList[i:i+m.gram])
+		contextGram = append(contextGram, tokenList[i:i+m.gram-1])
 	}
+
+	m.totalGram = append(m.totalGram, totalGram...)
+	m.contextGram = append(m.contextGram, contextGram...)
 
 }
 
@@ -155,9 +159,9 @@ func (m *NGramModel)GetRandomToken(context []string) string{
 func (m *NGramModel)GetRandomText(length int) string {
 	result := ""
 	// the (n−1)-list filled with "<s>"
-	var c_context [m.gram - 1]string
-	for _, s in range c_context {
-		s = "<s>"
+	c_context := []string{}
+	for j := 0; j < m.gram - 1; j++ {
+		c_context = append(c_context, "<s>")
 	}
 
 	for i := 0; i < length; i++ {
@@ -166,8 +170,9 @@ func (m *NGramModel)GetRandomText(length int) string {
 		result += " "
 		if cur == "</s>" {
 			// reinitialize the context list when reaching the end of sentence
-			for _, s in range c_context {
-				s = "<s>"
+			c_context = []string{}
+			for j := 0; j < m.gram - 1; j++ {
+				c_context = append(c_context, "<s>")
 			}
 		} else {
 			if m.gram != 1 {
@@ -177,11 +182,11 @@ func (m *NGramModel)GetRandomText(length int) string {
 		}
 	}
 	// exempting space at the end
-	return result[:-1]
+	return result[:len(result) - 1]
 }
 
 func NewNGram(gram_n int, path string) NGramModel {
-	model = MarkovModel{gram: gram_n, totalGram: a [][]string, contextGram: b [][]string}
+	model := NGramModel{gram: gram_n}
 
 	file, err := ioutil.ReadFile(path)
     if err != nil {
@@ -193,4 +198,6 @@ func NewNGram(gram_n int, path string) NGramModel {
 	for _, sen in range sen_list {
 		model.updateNGram(sen)
 	}
+
+	return model
 }
