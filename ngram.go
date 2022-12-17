@@ -88,7 +88,6 @@ func (m *NGramModel)updateNGram(sen string) {
 
 	m.totalGram = append(m.totalGram, totalGram...)
 	m.contextGram = append(m.contextGram, contextGram...)
-
 }
 
 func (m *NGramModel)GetProb(context []string, token string) float64 {
