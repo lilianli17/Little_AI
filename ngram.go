@@ -1,19 +1,18 @@
 package ngram
 
 import (
-	"reflect"
-	"strings"
 	"Math/rand"
-	"sort"
-	"io/ioutil"
 	"fmt"
+	"io/ioutil"
+	"reflect"
+	"sort"
+	"strings"
 )
 
 type NGramModel struct {
-	gram    int
-	totalGram [][]string
+	gram        int
+	totalGram   [][]string
 	contextGram [][]string
-
 }
 
 // MarkovModel declares a simple language model that
@@ -50,7 +49,7 @@ func Tokenize(gram int, sen string) []string {
 	}
 	var word string = ""
 	for _, w := range sen {
-		if w != ' ' && w != '\n'  && !IsPunct(string(w)) {
+		if w != ' ' && w != '\n' && !IsPunct(string(w)) {
 			word = word + string(w)
 		} else {
 			if word != "" {
@@ -72,7 +71,7 @@ func Tokenize(gram int, sen string) []string {
 	return tokenList
 }
 
-func (m *NGramModel)updateNGram(sen string) {
+func (m *NGramModel) updateNGram(sen string) {
 	// get token list of sentence
 	tokenList := Tokenize(m.gram, sen)
 	// a list of all n-grams: context + current token
@@ -90,36 +89,38 @@ func (m *NGramModel)updateNGram(sen string) {
 	m.contextGram = append(m.contextGram, contextGram...)
 }
 
-func (m *NGramModel)GetProb(context []string, token string) float64 {
+func (m *NGramModel) GetProb(context []string, token string) float64 {
 	var total float64 = 0.0
 	var counter float64 = 0.0
-	
+
 	for i := 0; i < len(m.totalGram); i++ {
 		if reflect.DeepEqual(m.contextGram[i], context) {
 			total += 1
-			if m.totalGram[i][m.gram - 1] == token {
+			if m.totalGram[i][m.gram-1] == token {
 				counter += 1
 			}
 		}
 	}
-	if total == 0 {return 0.0}
+	if total == 0 {
+		return 0.0
+	}
 	return counter / total
 
 }
 
 // helper function: check if slice s contains string e
 func contains(s []string, e string) bool {
-    for _, a := range s {
-        if a == e {
-            return true
-        }
-    }
-    return false
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
 }
 
-// returns a random token according to the probability distribution 
+// returns a random token according to the probability distribution
 // determined by the given context.
-func (m *NGramModel)GetRandomToken(context []string) string{
+func (m *NGramModel) GetRandomToken(context []string) string {
 	r := rand.Float64()
 	var counter float64 = 0.0
 	tokens := make(map[string]float64)
@@ -128,19 +129,19 @@ func (m *NGramModel)GetRandomToken(context []string) string{
 	for i := 0; i < len(m.totalGram); i++ {
 		if reflect.DeepEqual(m.contextGram[i], context) {
 			counter += 1
-			if val, ok := tokens[m.totalGram[i][m.gram - 1]]; ok {
+			if val, ok := tokens[m.totalGram[i][m.gram-1]]; ok {
 				counter += 1
 				temp := val + 1
-				tokens[m.totalGram[i][m.gram - 1]] = temp
+				tokens[m.totalGram[i][m.gram-1]] = temp
 			} else {
-				tokens[m.totalGram[i][m.gram - 1]] = 1
+				tokens[m.totalGram[i][m.gram-1]] = 1
 			}
 
-			if !contains(t_list, m.totalGram[i][m.gram - 1]) {
-				t_list = append(t_list, m.totalGram[i][m.gram - 1])
+			if !contains(t_list, m.totalGram[i][m.gram-1]) {
+				t_list = append(t_list, m.totalGram[i][m.gram-1])
 			}
 		}
-	} 
+	}
 
 	sort.Strings(t_list)
 	prob := 1 / counter
