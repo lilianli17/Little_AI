@@ -156,46 +156,46 @@ func (m *NGramModel)GetRandomToken(context []string) string{
 	return "<>"
 }
 
-func (m *NGramModel)GetRandomText(length int) string {
+func (m *NGramModel) GetRandomText(length int) string {
 	result := ""
 	// the (n−1)-list filled with "<s>"
 	c_context := []string{}
-	for j := 0; j < m.gram - 1; j++ {
+	for j := 0; j < m.gram-1; j++ {
 		c_context = append(c_context, "<s>")
 	}
 
 	for i := 0; i < length; i++ {
-		cur = m.GetRandomToken(c_context)
+		cur := m.GetRandomToken(c_context)
 		result += cur
 		result += " "
 		if cur == "</s>" {
 			// reinitialize the context list when reaching the end of sentence
 			c_context = []string{}
-			for j := 0; j < m.gram - 1; j++ {
+			for j := 0; j < m.gram-1; j++ {
 				c_context = append(c_context, "<s>")
 			}
 		} else {
 			if m.gram != 1 {
-				c_context.append(cur)
+				c_context = append(c_context, cur)
 				c_context = c_context[1:]
 			}
 		}
 	}
 	// exempting space at the end
-	return result[:len(result) - 1]
+	return result[:len(result)-1]
 }
 
 func NewNGram(gram_n int, path string) NGramModel {
 	model := NGramModel{gram: gram_n}
 
 	file, err := ioutil.ReadFile(path)
-    if err != nil {
-       fmt.Printf("Could not read the file due to this %s error \n", err)
-    }
-    fileContent := string(file)
+	if err != nil {
+		fmt.Printf("Could not read the file due to this %s error \n", err)
+	}
+	fileContent := string(file)
 	// separate whole text file by sentence
 	sen_list := strings.Split(fileContent, ".")
-	for _, sen in range sen_list {
+	for _, sen := range sen_list {
 		model.updateNGram(sen)
 	}
 
