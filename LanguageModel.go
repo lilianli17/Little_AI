@@ -5,6 +5,7 @@ import (
 	"strings"
 	"Math/rand"
 	"sort"
+	"io/ioutil"
 )
 
 type NGramModel struct {
@@ -19,7 +20,7 @@ type NGramModel struct {
 type MarkovModel interface {
 	Tokenize(int, string) []string
 
-	InitNGram([]string)
+	updateNGram([]string)
 
 	GetProb([]string, string) float64
 
@@ -33,7 +34,7 @@ type MarkovModel interface {
 // helper function: identifying punctuations
 func IsPunct(s string) bool {
 	switch s {
-	case ".", ":", "!", "?", "'", ",", "-":
+	case ".", ":", "!", "?", "'", ",", "-", "\"", ";", "(", ")", "[", "]", "{", "}", "\n":
 		return true
 	}
 	return false
@@ -70,7 +71,7 @@ func Tokenize(gram int, sen string) []string {
 	return tokenList
 }
 
-func (m *NGramModel)InitNGram(sen string) {
+func (m *NGramModel)updateNGram(sen string) {
 	// get token list of sentence
 	tokenList := Tokenize(m.gram, sen)
 	// a list of all n-grams: context + current token
@@ -78,12 +79,11 @@ func (m *NGramModel)InitNGram(sen string) {
 	// n−1 words preceding the current token: only context
 	var contextGram [][]string
 
+	// update totalGram and contetGram in the model
 	for i := 0; i < len(tokenList)-m.gram+1; i++ {
-		totalGram = append(totalGram, tokenList[i:i+m.gram])
-		contextGram = append(contextGram, tokenList[i:i+m.gram-1])
+		m.totalGram = append(m.totalGram, tokenList[i:i+m.gram])
+		m.contextGram = append(m.contextGram, tokenList[i:i+m.gram-1])
 	}
-	m.totalGram = totalGram
-	m.contextGram = contextGram
 
 }
 
@@ -152,4 +152,45 @@ func (m *NGramModel)GetRandomToken(context []string) string{
 	return "<>"
 }
 
+func (m *NGramModel)GetRandomText(length int) string {
+	result := ""
+	// the (n−1)-list filled with "<s>"
+	var c_context [m.gram - 1]string
+	for _, s in range c_context {
+		s = "<s>"
+	}
 
+	for i := 0; i < length; i++ {
+		cur = m.GetRandomToken(c_context)
+		result += cur
+		result += " "
+		if cur == "</s>" {
+			// reinitialize the context list when reaching the end of sentence
+			for _, s in range c_context {
+				s = "<s>"
+			}
+		} else {
+			if m.gram != 1 {
+				c_context.append(cur)
+				c_context = c_context[1:]
+			}
+		}
+	}
+	// exempting space at the end
+	return result[:-1]
+}
+
+func NewNGram(gram_n int, path string) NGramModel {
+	model = MarkovModel{gram: gram_n, totalGram: a [][]string, contextGram: b [][]string}
+
+	file, err := ioutil.ReadFile(path)
+    if err != nil {
+       fmt.Printf("Could not read the file due to this %s error \n", err)
+    }
+    fileContent := string(file)
+	// separate whole text file by sentence
+	sen_list := strings.Split(fileContent, ".")
+	for _, sen in range sen_list {
+		model.updateNGram(sen)
+	}
+}
