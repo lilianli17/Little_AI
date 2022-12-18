@@ -1,7 +1,7 @@
 package ngram
 
 import (
-	"Math/rand"
+	"math/rand"
 	"fmt"
 	"io/ioutil"
 	"reflect"
