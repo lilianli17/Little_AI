@@ -44,9 +44,10 @@ func Tokenize(gram int, sen string) []string {
 	sen = strings.TrimSpace(sen)
 	tokenList := []string{}
 
-	for a := 0; a < gram-1; a++ {
-		tokenList = append(tokenList, "<s>")
+	for a := 1; a < gram; a++ {
+		tokenList = append(tokenList, "<start>")
 	}
+	
 	var word string = ""
 	for _, w := range sen {
 		if w != ' ' && w != '\n' && !IsPunct(string(w)) {
@@ -65,9 +66,8 @@ func Tokenize(gram int, sen string) []string {
 	if word != "" {
 		tokenList = append(tokenList, word)
 	}
-	for b := 0; b < gram-1; b++ {
-		tokenList = append(tokenList, "</s>")
-	}
+	tokenList = append(tokenList, "<end>")
+
 	return tokenList
 }
 
@@ -158,21 +158,21 @@ func (m *NGramModel) GetRandomToken(context []string) string {
 
 func (m *NGramModel) GetRandomText(length int) string {
 	result := ""
-	// the (n−1)-list filled with "<s>"
+	// the (n−1)-list filled with "<start>"
 	c_context := []string{}
 	for j := 0; j < m.gram-1; j++ {
-		c_context = append(c_context, "<s>")
+		c_context = append(c_context, "<start>")
 	}
 
 	for i := 0; i < length; i++ {
 		cur := m.GetRandomToken(c_context)
 		result += cur
 		result += " "
-		if cur == "</s>" {
+		if cur == "<end>" {
 			// reinitialize the context list when reaching the end of sentence
 			c_context = []string{}
 			for j := 0; j < m.gram-1; j++ {
-				c_context = append(c_context, "<s>")
+				c_context = append(c_context, "<start>")
 			}
 		} else {
 			if m.gram != 1 {
