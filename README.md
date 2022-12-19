@@ -1,4 +1,4 @@
-# random_sentence_generator
+# Random sentence generator
 
 > Let AI generate your own words!
 
