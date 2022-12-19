@@ -1,12 +1,12 @@
 package ngram
 
 import (
-	"math/rand"
 	"fmt"
 	"io/ioutil"
 	"reflect"
 	"sort"
 	"strings"
+	"math/rand"
 )
 
 type NGramModel struct {
@@ -34,7 +34,7 @@ type MarkovModel interface {
 // helper function: identifying punctuations
 func IsPunct(s string) bool {
 	switch s {
-	case ".", ":", "!", "?", "'", ",", "-", "\"", ";", "(", ")", "[", "]", "{", "}", "\n":
+	case ".", ":", "!", "?", "'", ",", "-", "\"", ";", "(", ")", "[", "]", "{", "}":
 		return true
 	}
 	return false
@@ -47,7 +47,7 @@ func Tokenize(gram int, sen string) []string {
 	for a := 1; a < gram; a++ {
 		tokenList = append(tokenList, "<start>")
 	}
-	
+
 	var word string = ""
 	for _, w := range sen {
 		if w != ' ' && w != '\n' && !IsPunct(string(w)) {
@@ -93,36 +93,27 @@ func (m *NGramModel) GetProb(context []string, token string) float64 {
 	var total float64 = 0.0
 	var counter float64 = 0.0
 
-	for i := 0; i < len(m.totalGram); i++ {
+	for i := 0; i < len(m.contextGram); i++ {
 		if reflect.DeepEqual(m.contextGram[i], context) {
-			total += 1
-			if m.totalGram[i][m.gram-1] == token {
-				counter += 1
+			total = total + 1
+			if strings.Compare(m.totalGram[i][m.gram-1], token) == 0 {
+				counter = counter + 1
 			}
 		}
 	}
 	if total == 0 {
 		return 0.0
 	}
+
 	return counter / total
 
-}
-
-// helper function: check if slice s contains string e
-func contains(s []string, e string) bool {
-	for _, a := range s {
-		if a == e {
-			return true
-		}
-	}
-	return false
 }
 
 // returns a random token according to the probability distribution
 // determined by the given context.
 func (m *NGramModel) GetRandomToken(context []string) string {
 	r := rand.Float64()
-	var counter float64 = 0.0
+	counter := 0.0
 	tokens := make(map[string]float64)
 	t_list := []string{}
 
@@ -130,14 +121,9 @@ func (m *NGramModel) GetRandomToken(context []string) string {
 		if reflect.DeepEqual(m.contextGram[i], context) {
 			counter += 1
 			if val, ok := tokens[m.totalGram[i][m.gram-1]]; ok {
-				counter += 1
-				temp := val + 1
-				tokens[m.totalGram[i][m.gram-1]] = temp
+				tokens[m.totalGram[i][m.gram-1]] = val + 1
 			} else {
 				tokens[m.totalGram[i][m.gram-1]] = 1
-			}
-
-			if !contains(t_list, m.totalGram[i][m.gram-1]) {
 				t_list = append(t_list, m.totalGram[i][m.gram-1])
 			}
 		}
@@ -195,6 +181,7 @@ func NewNGram(gram_n int, path string) NGramModel {
 	fileContent := string(file)
 	// separate whole text file by sentence
 	sen_list := strings.Split(fileContent, ".")
+	// update the current model by sentence
 	for _, sen := range sen_list {
 		model.updateNGram(sen)
 	}
