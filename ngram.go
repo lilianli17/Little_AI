@@ -1,12 +1,12 @@
-package ngram
+package randomSentenceGenerator
 
 import (
 	"fmt"
 	"io/ioutil"
+	"math/rand"
 	"reflect"
 	"sort"
 	"strings"
-	"math/rand"
 )
 
 type NGramModel struct {
@@ -15,10 +15,10 @@ type NGramModel struct {
 	contextGram [][]string
 }
 
-// MarkovModel declares a simple language model that
+// MarkovModel interface declares a simple n-gram language model that
 // can be used to generate random text resembling a source document
 type MarkovModel interface {
-	Tokenize(int, string) []string
+	Tokenization(int, string) []string
 
 	updateNGram([]string)
 
@@ -32,15 +32,18 @@ type MarkovModel interface {
 }
 
 // helper function: identifying punctuations
+// (only the most commonly used in English)
 func IsPunct(s string) bool {
 	switch s {
-	case ".", ":", "!", "?", "'", ",", "-", "\"", ";", "(", ")", "[", "]", "{", "}":
+	case ".", ":", "!", "?", "'", ",", "-", "\"", ";",
+		"(", ")", "[", "]", "{", "}":
 		return true
 	}
 	return false
 }
 
-func Tokenize(gram int, sen string) []string {
+// Generates a list of tokens from the input string of text
+func Tokenization(gram int, sen string) []string {
 	sen = strings.TrimSpace(sen)
 	tokenList := []string{}
 
@@ -71,9 +74,11 @@ func Tokenize(gram int, sen string) []string {
 	return tokenList
 }
 
+// Computes the n-grams for the input sentence and
+// updates the internal totalGram and contextGram
 func (m *NGramModel) updateNGram(sen string) {
 	// get token list of sentence
-	tokenList := Tokenize(m.gram, sen)
+	tokenList := Tokenization(m.gram, sen)
 	// a list of all n-grams: context + current token
 	var totalGram [][]string
 	// n−1 words preceding the current token: only context
@@ -89,6 +94,7 @@ func (m *NGramModel) updateNGram(sen string) {
 	m.contextGram = append(m.contextGram, contextGram...)
 }
 
+// Computes the probability of that token occuring, given the preceding context
 func (m *NGramModel) GetProb(context []string, token string) float64 {
 	var total float64 = 0.0
 	var counter float64 = 0.0
@@ -109,8 +115,8 @@ func (m *NGramModel) GetProb(context []string, token string) float64 {
 
 }
 
-// returns a random token according to the probability distribution
-// determined by the given context.
+// Return a random token according to the probability distribution
+// determined by the given context
 func (m *NGramModel) GetRandomToken(context []string) string {
 	r := rand.Float64()
 	counter := 0.0
@@ -142,6 +148,7 @@ func (m *NGramModel) GetRandomToken(context []string) string {
 	return "<>"
 }
 
+// Returns a string of space-separated tokens chosen at random using GetRandomToken
 func (m *NGramModel) GetRandomText(length int) string {
 	result := ""
 	// the (n−1)-list filled with "<start>"
@@ -171,6 +178,7 @@ func (m *NGramModel) GetRandomText(length int) string {
 	return result[:len(result)-1]
 }
 
+// Loads the text at the given path and creates an n-gram model from the resulting data
 func NewNGram(gram_n int, path string) NGramModel {
 	model := NGramModel{gram: gram_n}
 

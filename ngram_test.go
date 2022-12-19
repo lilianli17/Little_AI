@@ -1,15 +1,15 @@
-package ngram
+package randomSentenceGenerator
 
 import (
 	"math/rand"
 	"reflect"
-	"testing"
 	"strings"
+	"testing"
 )
 
 func TestTokenization1(t *testing.T) {
 	sen := "  This is an example. "
-	actualList := Tokenize(1, sen)
+	actualList := Tokenization(1, sen)
 	expectedlist := []string{"This", "is", "an", "example", ".", "<end>"}
 	if !reflect.DeepEqual(actualList, expectedlist) {
 		t.Errorf("not the same")
@@ -18,7 +18,7 @@ func TestTokenization1(t *testing.T) {
 
 func TestTokenization2(t *testing.T) {
 	sen := "  This is an example. "
-	actualList := Tokenize(2, sen)
+	actualList := Tokenization(2, sen)
 	// fmt.Printf("%v", actualList)
 	expectedList := []string{"<start>", "This", "is", "an", "example", ".", "<end>"}
 	if !reflect.DeepEqual(actualList, expectedList) {
@@ -28,7 +28,7 @@ func TestTokenization2(t *testing.T) {
 
 func TestTokenization3(t *testing.T) {
 	sen := "  This is an example. "
-	actualList := Tokenize(3, sen)
+	actualList := Tokenization(3, sen)
 	// fmt.Printf("%v", actualList)
 	expectedlist := []string{"<start>", "<start>", "This", "is", "an", "example", ".", "<end>"}
 	if !reflect.DeepEqual(actualList, expectedlist) {
