@@ -25,7 +25,7 @@ result := model.GetRandomText(6)
 
 ## Documentation
 
-Documentation for the package can be found here. (https://pkg.go.dev/github.com/lilianli17/random_sentence_generator)
+Documentation for the package can be found [here.](https://pkg.go.dev/github.com/lilianli17/random_sentence_generator)
 
 ## License
 
