@@ -1,3 +1,3 @@
-module ngram
+module randomSentenceGenerator
 
 go 1.19
