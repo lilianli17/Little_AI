@@ -94,7 +94,7 @@ func (m *NGramModel) updateNGram(sen string) {
 	m.contextGram = append(m.contextGram, contextGram...)
 }
 
-// Computes the probability of that token occuring, given the preceding context
+// Computes the probability of that token occurring, given the preceding context
 func (m *NGramModel) GetProb(context []string, token string) float64 {
 	var total float64 = 0.0
 	var counter float64 = 0.0
