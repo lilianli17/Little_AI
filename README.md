@@ -10,6 +10,8 @@ Final project for CIS 1930. A n-gram language model that can be used to generate
 
 ## Usage Instructions
 
+## Simple Usages
+
 ## Documentation
 
 ## License
