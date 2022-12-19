@@ -1,5 +1,8 @@
 # Random sentence generator
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/lilianli17/random_sentence_generator)](https://goreportcard.com/report/github.com/lilianli17/random_sentence_generator)
+
+
 > Let AI generate your own words!
 
 ## Introduction
