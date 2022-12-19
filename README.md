@@ -6,7 +6,7 @@
 
 ## Introduction
 
-Final project for CIS 1930. A n-gram language model that can be used to generate random text resembling a source document (not using existing go packages)
+Final project for CIS 1930. A n-gram language model that can be used to generate random text resembling a source document 
 
 ## Usage Instructions
 

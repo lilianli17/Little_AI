@@ -1,4 +1,4 @@
-package randomSentenceGenerator
+package ngram
 
 import (
 	"math/rand"
